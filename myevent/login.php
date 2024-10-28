@@ -1,7 +1,8 @@
 <?php
 if (isset($_POST['submit'])) {
     $email = $_POST['useremail'];
-    $password = sha1($_POST['password']);
+    $passwordraw = $_POST['password'];
+    $password = sha1($passwordraw);
     $sqllogin = "SELECT  `admin_email`, `admin_password` FROM `tbl_admins` WHERE `admin_email` = '$email' AND `admin_password` = '$password'";
     
     try{
@@ -10,6 +11,10 @@ if (isset($_POST['submit'])) {
         $stmt->execute();
         $number_of_rows = $stmt->rowCount();
         if ($number_of_rows > 0) {
+            session_start();
+            $_SESSION['sessionid'] = session_id();
+            $_SESSION['adminemail'] = $email;
+            $_SESSION['adminpass'] = $passwordraw;
             echo "<script>alert('Success')</script>";
             echo "<script>window.location.replace('mainpage.php')</script>";
         }else{
