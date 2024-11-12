@@ -31,6 +31,32 @@ if (isset($_POST['submit'])) {
     }
 }
 
+if (isset($_GET['submit'])) {
+    $operation = $_GET['submit'];
+    $newsid = $_GET['newsid'];
+    if ($operation == "delete") {
+        $sqldeletenews = "DELETE FROM `tbl_news` WHERE `news_id` = '$newsid'";
+        try{
+            include("dbconnect.php"); // database connection
+            $conn->query($sqldeletenews);
+            echo "<script>alert('Success')</script>";
+            echo "<script>window.location.replace('mainpage.php')</script>";
+        }catch(PDOException $e){
+            echo "<script>alert('Failed!!!')</script>";
+            echo "<script>window.location.replace('mainpage.php')</script>";
+        }
+    }
+}
+
+//load data
+
+include("dbconnect.php"); // database connection
+$sqlloadnews = "SELECT * FROM `tbl_news`";
+$stmt = $conn->prepare($sqlloadnews);
+$stmt->execute();
+$number_of_rows = $stmt->rowCount();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 function randomString($length = 10)
 {
     $characters =
@@ -42,7 +68,17 @@ function randomString($length = 10)
     }
     return $randomString;
 }
+
+function truncate($string, $length, $dots = "...")
+{
+    return strlen($string) > $length
+        ? substr($string, 0, $length - strlen($dots)) . $dots
+        : $string;
+}
+
 //form data handler
+
+
 ?>
 
 <!DOCTYPE html>
@@ -96,9 +132,37 @@ function randomString($length = 10)
             <button class="w3-button w3-teal w3-round w3-margin"
                 onclick="document.getElementById('id01').style.display='block'">New News</button>
         </div>
-        <div class="w3-container" style="height: 800px;margin:auto">
-
+        <div style="height:80px">
         </div>
+        <!-- table section  -->
+        <div class="w3-container" style="height: 1200px;margin:auto;overflow-y: auto">
+            <?php
+                if($number_of_rows > 0){
+                    echo "<table class='w3-table-all'>";
+                    echo "<tr><th>No</th><th>Title</th><th>Content</th><th>Date</th><th>Action</th></tr>";
+                    $i =1;
+                    foreach ($rows as $news) { //array traversal
+                        $newsid = $news['news_id'];
+                        $newstitle = $news['news_title'];
+                        $newscontent = truncate($news['news_content'],200);
+                        $newsfilename = $news['news_filename'];
+                        $newsdate = date_format(date_create($news['news_date']),"d-m-Y h:i a");
+                        echo "<tr>
+                                <td>$i</td>
+                                <td>$newstitle</td>
+                                <td>$newscontent</td>
+                                <td>$newsdate</td>
+                                <td><a href='mainpage.php?submit=delete&newsid=$newsid' class='w3-button w3-round w3-red' onclick=\"return confirm ('Delete this news no $i?');\" >&nbsp&nbsp;View&nbsp</a><div style='margin-bottom:5px'></div>
+                                <a href='' class='w3-button w3-round w3-yellow' >Update</a>
+                                </td>
+                            </tr>";
+                        $i++;
+                    }
+                    echo "</table>";
+                }
+            ?>
+        </div>
+
         <footer class="w3-teal w3-padding-24">
             <p style="text-align: center">Copyright &copy; 2023 Slumberjer Event Sdn Bhd</p>
         </footer>
