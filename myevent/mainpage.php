@@ -17,7 +17,6 @@ if (isset($_POST['submit'])) {
     $target_dir = "uploads/";
     $target_file = $target_dir . $filename ;
    
-
     $sqlinews = "INSERT INTO `tbl_news`(`news_title`, `news_content`, `news_filename`) VALUES ('$title',' $content','$filename')";
     try{
         include("dbconnect.php"); // database connection
@@ -128,15 +127,17 @@ function truncate($string, $length, $dots = "...")
             <h1>News</h1>
             <p>Your One Stop Event Manager</p>
         </header>
-        <div class="w3-right">
+        <div class="w3-right w3-bar-item">
+        <button class="w3-button w3-teal w3-round w3-margin"
+        onclick="document.getElementById('idabout').style.display='block'">About</button>
+
             <button class="w3-button w3-teal w3-round w3-margin"
                 onclick="document.getElementById('id01').style.display='block'">New News</button>
         </div>
-        <div style="height:80px">
-        </div>
-        <!-- table section  -->
-        <div class="w3-container" style="height: 1200px;margin:auto;overflow-y: auto">
-            <?php
+        <div style="height:80px"></div>
+            <!-- table section  -->
+            <div class="w3-container" style="height: 1200px;margin:auto;overflow-y: auto">
+                <?php
                 if($number_of_rows > 0){
                     echo "<table class='w3-table-all'>";
                     echo "<tr><th>No</th><th>Title</th><th>Content</th><th>Date</th><th>Action</th></tr>";
@@ -144,7 +145,7 @@ function truncate($string, $length, $dots = "...")
                     foreach ($rows as $news) { //array traversal
                         $newsid = $news['news_id'];
                         $newstitle = $news['news_title'];
-                        $newscontent = truncate($news['news_content'],200);
+                        $newscontent = truncate($news['news_content'],250);
                         $newsfilename = $news['news_filename'];
                         $newsdate = date_format(date_create($news['news_date']),"d-m-Y h:i a");
                         echo "<tr>
@@ -152,7 +153,11 @@ function truncate($string, $length, $dots = "...")
                                 <td>$newstitle</td>
                                 <td>$newscontent</td>
                                 <td>$newsdate</td>
-                                <td><a href='mainpage.php?submit=delete&newsid=$newsid' class='w3-button w3-round w3-red' onclick=\"return confirm ('Delete this news no $i?');\" >&nbsp&nbsp;View&nbsp</a><div style='margin-bottom:5px'></div>
+                                <td>
+                                <a href='newsdetails.php?newsid=$newsid' class='w3-button w3-round w3-green'  >&nbsp;View&nbsp;</a>
+                                <div style='margin-bottom:5px'></div>
+                                <a href='mainpage.php?submit=delete&newsid=$newsid' class='w3-button w3-round w3-red' onclick=\"return confirm ('Delete this news no $i?');\" >Delete</a>
+                                <div style='margin-bottom:5px'></div>
                                 <a href='' class='w3-button w3-round w3-yellow' >Update</a>
                                 </td>
                             </tr>";
@@ -161,55 +166,68 @@ function truncate($string, $length, $dots = "...")
                     echo "</table>";
                 }
             ?>
-        </div>
-
-        <footer class="w3-teal w3-padding-24">
-            <p style="text-align: center">Copyright &copy; 2023 Slumberjer Event Sdn Bhd</p>
-        </footer>
-    </div>
-    <!-- Content -->
-
-    <!-- modal window -->
-    <div id="id01" class="w3-modal">
-        <div class="w3-modal-content w3-card-4">
-            <header class="w3-container w3-teal">
-                <span onclick="document.getElementById('id01').style.display='none'"
-                    class="w3-button w3-display-topright  fa fa-close"></span>
-                <h2>New News</h2>
-            </header>
-            <div class="w3-container">
-                <br>
-                <form action="mainpage.php" method="POST" enctype="multipart/form-data">
-                    <input class="w3-input w3-border w3-round" type="text" name="title" required
-                        placeholder="Title"><br>
-                    <textarea class="w3-input w3-border w3-round" name="content" required placeholder="News Content"
-                        rows="10" cols="50"></textarea>
-                    <br>
-                    <label for="myfileid">Select a file (png):</label>
-                    <input type="file" id="myfileid" name="newsfile" accept=".png" required>
-                    <br>
-                    <br>
-                    <input class="w3-input w3-border w3-button w3-teal w3-round" type="submit" name="submit"
-                        value="Insert News">
-                </form>
-                <br>
             </div>
-            <footer class="w3-container w3-teal w3-center">
-                <p>Slumberjer Event</p>
+
+            <footer class="w3-teal w3-padding-24">
+                <p style="text-align: center">Copyright &copy; 2023 Slumberjer Event Sdn Bhd</p>
             </footer>
         </div>
-    </div>
-    <!-- modal window -->
+        <!-- Content -->
 
-    <script>
-    function open_menu() {
-        document.getElementById("mySidebar").style.display = "block";
-    }
+        <!-- modal window -->
+        <div id="id01" class="w3-modal">
+            <div class="w3-modal-content w3-card-4">
+                <header class="w3-container w3-teal">
+                    <span onclick="document.getElementById('id01').style.display='none'"
+                        class="w3-button w3-display-topright  fa fa-close"></span>
+                    <h2>New News</h2>
+                </header>
+                <div class="w3-container">
+                    <br>
+                    <form action="mainpage.php" method="POST" enctype="multipart/form-data">
+                        <input class="w3-input w3-border w3-round" type="text" name="title" required
+                            placeholder="Title"><br>
+                        <textarea class="w3-input w3-border w3-round" name="content" required placeholder="News Content"
+                            rows="10" cols="50"></textarea>
+                        <p>
+                            <label for="myfileid">Select a file (png):</label>
+                            <input type="file" id="myfileid" name="newsfile" accept=".png" required>
+                        </p>
+                        <br>
+                        <input class="w3-input w3-border w3-button w3-teal w3-round" type="submit" name="submit"
+                            value="Insert News">
+                    </form>
+                    <br>
+                </div>
+                <footer class="w3-container w3-teal w3-center">
+                    <p>Slumberjer Event</p>
+                </footer>
+            </div>
+        </div>
+        <!-- modal window -->
 
-    function close_menu() {
-        document.getElementById("mySidebar").style.display = "none";
-    }
-    </script>
+        <div id="idabout" class="w3-modal">
+            <div class="w3-modal-content w3-card-4">
+                <header class="w3-container w3-teal">
+                    <span onclick="document.getElementById('idabout').style.display='none'"
+                        class="w3-button w3-display-topright  fa fa-close"></span>
+                    <h3>About App</h3>
+                </header>
+                <div class="w3-container w3-padding">
+                    <p>This application develop for Slumberjer Event Sdn Bhd<p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        function open_menu() {
+            document.getElementById("mySidebar").style.display = "block";
+        }
+
+        function close_menu() {
+            document.getElementById("mySidebar").style.display = "none";
+        }
+        </script>
 </body>
 
 </html>

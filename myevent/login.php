@@ -69,6 +69,7 @@ if (isset($_POST['submit'])) {
 </body>
 
 <script>
+    
 function rememberMe() {
     if (document.getElementById('checkboxid').checked) {
         var useremail = document.getElementById('useremailid').value;
