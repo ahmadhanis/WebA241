@@ -154,11 +154,11 @@ function truncate($string, $length, $dots = "...")
                                 <td>$newscontent</td>
                                 <td>$newsdate</td>
                                 <td>
-                                <a href='newsdetails.php?newsid=$newsid' class='w3-button w3-round w3-green'  >&nbsp;View&nbsp;</a>
+                                <a href='editnews.php?newsid=$newsid' class='w3-button w3-round w3-green'  >&nbsp;Edit&nbsp;&nbsp;</a>
                                 <div style='margin-bottom:5px'></div>
                                 <a href='mainpage.php?submit=delete&newsid=$newsid' class='w3-button w3-round w3-red' onclick=\"return confirm ('Delete this news no $i?');\" >Delete</a>
                                 <div style='margin-bottom:5px'></div>
-                                <a href='' class='w3-button w3-round w3-yellow' >Update</a>
+                                <a href='' class='w3-button w3-round w3-yellow' >&nbsp;View&nbsp;</a>
                                 </td>
                             </tr>";
                         $i++;
