@@ -21,8 +21,8 @@ if (isset($_POST['update'])) {
         $conn->query($sqlupdatenews);
        
         if (file_exists($_FILES["newsfile"]["tmp_name"]) || is_uploaded_file($_FILES["newsfile"]["tmp_name"])) {
-            $target_dir = "uploads/";
-            move_uploaded_file($_FILES["newsfile"]["tmp_name"], $target_dir . $filename);
+            $target_dir = "uploads/". $filename;
+            move_uploaded_file($_FILES["newsfile"]["tmp_name"], $target_dir);
         }
        
         echo "<script>alert('Success')</script>";

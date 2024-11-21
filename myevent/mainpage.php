@@ -30,6 +30,21 @@ if (isset($_POST['submit'])) {
     }
 }
 
+//search operation based on search form
+if (isset($_GET['btnsearch'])) {
+    $search = $_GET['search'];
+    $searchby = $_GET['searchby'];
+
+    if ($searchby == "title") {
+        $sqlloadnews = "SELECT * FROM `tbl_news` WHERE `news_title` LIKE '%$search%'";
+    }
+    if ($searchby == "content") {
+        $sqlloadnews = "SELECT * FROM `tbl_news` WHERE `news_content` LIKE '%$search%'";  
+    }
+}else{
+    $sqlloadnews = "SELECT * FROM `tbl_news`";
+}
+
 if (isset($_GET['submit'])) {
     $operation = $_GET['submit'];
     $newsid = $_GET['newsid'];
@@ -50,7 +65,7 @@ if (isset($_GET['submit'])) {
 //load data
 
 include("dbconnect.php"); // database connection
-$sqlloadnews = "SELECT * FROM `tbl_news`";
+
 $stmt = $conn->prepare($sqlloadnews);
 $stmt->execute();
 $number_of_rows = $stmt->rowCount();
@@ -127,18 +142,40 @@ function truncate($string, $length, $dots = "...")
             <h1>News</h1>
             <p>Your One Stop Event Manager</p>
         </header>
-        <div class="w3-right w3-bar-item">
-        <button class="w3-button w3-teal w3-round w3-margin"
-        onclick="document.getElementById('idabout').style.display='block'">About</button>
-
-            <button class="w3-button w3-teal w3-round w3-margin"
+        <div class="w3-bar-item">  
+            <button class="w3-right w3-button w3-teal w3-round w3-margin"
+                onclick="document.getElementById('idabout').style.display='block'">About</button>
+            <button class="w3-right w3-button w3-teal w3-round w3-margin"
                 onclick="document.getElementById('id01').style.display='block'">New News</button>
         </div>
         <div style="height:80px"></div>
-            <!-- table section  -->
-            <div class="w3-container" style="height: 1200px;margin:auto;overflow-y: auto">
-                <?php
+
+        <!-- Search news form -->
+        <div class="w3-container w3-padding w3-card w3-margin">
+                <form action="mainpage.php">
+                    <div class="w3-row">
+                        <div class="w3-third w3-padding">
+                            <input class="w3-input w3-round w3-border" type="text" name="search" placeholder="Search">
+                        </div>
+                        <div class="w3-third w3-padding">
+                            <select class="w3-input w3-round w3-border" name="searchby">
+                                <option value="title">Title</option>
+                                <option value="content">Content</option>
+                            </select>
+                        </div>
+                        <div class="w3-third w3-padding">
+                            <input class="w3-button w3-round w3-teal" type="submit" name="btnsearch">
+                        </div>
+                    </div>    
+                </form> 
+        </div>  
+        <!-- search form ended -->
+
+        <!-- table section  -->
+        <div class="w3-container" style="height: 1200px;margin:auto;overflow-y: auto">
+            <?php
                 if($number_of_rows > 0){
+                     //Create table and table headers 
                     echo "<table class='w3-table-all'>";
                     echo "<tr><th>No</th><th>Title</th><th>Content</th><th>Date</th><th>Action</th></tr>";
                     $i =1;
@@ -148,6 +185,8 @@ function truncate($string, $length, $dots = "...")
                         $newscontent = truncate($news['news_content'],250);
                         $newsfilename = $news['news_filename'];
                         $newsdate = date_format(date_create($news['news_date']),"d-m-Y h:i a");
+                        
+                        //Generate dynamic table row 
                         echo "<tr>
                                 <td>$i</td>
                                 <td>$newstitle</td>
@@ -158,76 +197,101 @@ function truncate($string, $length, $dots = "...")
                                 <div style='margin-bottom:5px'></div>
                                 <a href='mainpage.php?submit=delete&newsid=$newsid' class='w3-button w3-round w3-red' onclick=\"return confirm ('Delete this news no $i?');\" >Delete</a>
                                 <div style='margin-bottom:5px'></div>
-                                <a href='' class='w3-button w3-round w3-yellow' >&nbsp;View&nbsp;</a>
+                                <a href='javascript:void(0)' onclick=\"document.getElementById('id$i').style.display='block'\" class='w3-button w3-round w3-yellow' >&nbsp;View&nbsp;</a>
                                 </td>
                             </tr>";
+                        
+                        //Dynamic modal window    
+                        echo " <div id='id$i' class='w3-modal'>
+                                <div class='w3-modal-content w3-card-4'>
+                                    <header class='w3-container w3-teal'>
+                                        <span onclick='document.getElementById(\"id$i\").style.display=\"none\"'
+                                        class='w3-button w3-display-topright fa fa-close'></span>
+                                        <h3>$newstitle</h3>
+                                    </header>
+                                   
+                                    <div class='w3-container w3-center w3-padding-large'>
+                                        <img src='uploads/$newsfilename' style='max-width:350px'>
+                                    </div>
+                                     <div class='w3-container'>
+                                        News Date: $newsdate
+                                    </div>
+                                    <div class='w3-container w3-padding'>
+                                        <p>$newscontent</p>
+                                    </div>
+                                    <footer class='w3-container w3-teal w3-center'>Slumberjer Event</footer>
+                                </div>
+                               </div>";
                         $i++;
                     }
                     echo "</table>";
+                }else{
+                    echo "<h2>No news found</h2>";
                 }
             ?>
-            </div>
+        </div>
 
-            <footer class="w3-teal w3-padding-24">
-                <p style="text-align: center">Copyright &copy; 2023 Slumberjer Event Sdn Bhd</p>
+        <footer class="w3-teal w3-padding-24">
+            <p style="text-align: center">Copyright &copy; 2023 Slumberjer Event Sdn Bhd</p>
+        </footer>
+    </div>
+    <!-- Content -->
+
+    <!-- Static modal window -->
+    <div id="id01" class="w3-modal">
+        <div class="w3-modal-content w3-card-4">
+            <header class="w3-container w3-teal">
+                <span onclick="document.getElementById('id01').style.display='none'"
+                    class="w3-button w3-display-topright  fa fa-close"></span>
+                <h2>New News</h2>
+            </header>
+            <div class="w3-container">
+                <br>
+                <form action="mainpage.php" method="POST" enctype="multipart/form-data">
+                    <input class="w3-input w3-border w3-round" type="text" name="title" required
+                        placeholder="Title"><br>
+                    <textarea class="w3-input w3-border w3-round" name="content" required placeholder="News Content"
+                        rows="10" cols="50"></textarea>
+                    <p>
+                        <label for="myfileid">Select a file (png):</label>
+                        <input type="file" id="myfileid" name="newsfile" accept=".png" required>
+                    </p>
+                    <br>
+                    <input class="w3-input w3-border w3-button w3-teal w3-round" type="submit" name="submit"
+                        value="Insert News">
+                </form>
+                <br>
+            </div>
+            <footer class="w3-container w3-teal w3-center">
+                <p>Slumberjer Event</p>
             </footer>
         </div>
-        <!-- Content -->
+    </div>
 
-        <!-- modal window -->
-        <div id="id01" class="w3-modal">
-            <div class="w3-modal-content w3-card-4">
-                <header class="w3-container w3-teal">
-                    <span onclick="document.getElementById('id01').style.display='none'"
-                        class="w3-button w3-display-topright  fa fa-close"></span>
-                    <h2>New News</h2>
-                </header>
-                <div class="w3-container">
-                    <br>
-                    <form action="mainpage.php" method="POST" enctype="multipart/form-data">
-                        <input class="w3-input w3-border w3-round" type="text" name="title" required
-                            placeholder="Title"><br>
-                        <textarea class="w3-input w3-border w3-round" name="content" required placeholder="News Content"
-                            rows="10" cols="50"></textarea>
-                        <p>
-                            <label for="myfileid">Select a file (png):</label>
-                            <input type="file" id="myfileid" name="newsfile" accept=".png" required>
-                        </p>
-                        <br>
-                        <input class="w3-input w3-border w3-button w3-teal w3-round" type="submit" name="submit"
-                            value="Insert News">
-                    </form>
-                    <br>
-                </div>
-                <footer class="w3-container w3-teal w3-center">
-                    <p>Slumberjer Event</p>
-                </footer>
+
+    <div id="idabout" class="w3-modal">
+        <div class="w3-modal-content w3-card-4">
+            <header class="w3-container w3-teal">
+                <span onclick="document.getElementById('idabout').style.display='none'"
+                    class="w3-button w3-display-topright  fa fa-close"></span>
+                <h3>About App</h3>
+            </header>
+            <div class="w3-container w3-padding">
+                <p>This application develop for Slumberjer Event Sdn Bhd
+                <p>
             </div>
         </div>
-        <!-- modal window -->
+    </div>
+    <!-- modal window -->
+    <script>
+    function open_menu() {
+        document.getElementById("mySidebar").style.display = "block";
+    }
 
-        <div id="idabout" class="w3-modal">
-            <div class="w3-modal-content w3-card-4">
-                <header class="w3-container w3-teal">
-                    <span onclick="document.getElementById('idabout').style.display='none'"
-                        class="w3-button w3-display-topright  fa fa-close"></span>
-                    <h3>About App</h3>
-                </header>
-                <div class="w3-container w3-padding">
-                    <p>This application develop for Slumberjer Event Sdn Bhd<p>
-                </div>
-            </div>
-        </div>
-
-        <script>
-        function open_menu() {
-            document.getElementById("mySidebar").style.display = "block";
-        }
-
-        function close_menu() {
-            document.getElementById("mySidebar").style.display = "none";
-        }
-        </script>
+    function close_menu() {
+        document.getElementById("mySidebar").style.display = "none";
+    }
+    </script>
 </body>
 
 </html>
