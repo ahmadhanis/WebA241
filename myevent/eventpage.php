@@ -31,7 +31,7 @@ if (isset($_SESSION['sessionid'])) {
         </div>
         <div class="w3-padding-64 w3-large w3-text-grey" style="font-weight:bold">
             <a href="mainpage.php" class="w3-bar-item w3-button">News</a>
-            <a href="memberpage.php" class="w3-bar-item w3-button">Events</a>
+            <a href="memberpage.php" class="w3-bar-item w3-button">Members</a>
             <a href="eventpage.php" class="w3-bar-item w3-button">Events</a>
             <a href="profilepage.php" class="w3-bar-item w3-button">profile</a>
             <a href="logout.php" class="w3-bar-item w3-button">Logout</a>

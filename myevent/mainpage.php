@@ -63,12 +63,23 @@ if (isset($_GET['submit'])) {
 }
 
 //load data
-
+$results_per_page = 10;
+if (isset($_GET["pageno"])) {
+    $pageno = (int) $_GET["pageno"];
+    $page_first_result = ($pageno - 1) * $results_per_page;
+} else {
+    $pageno = 1;
+    $page_first_result = 0;
+}
 include("dbconnect.php"); // database connection
 
 $stmt = $conn->prepare($sqlloadnews);
 $stmt->execute();
 $number_of_rows = $stmt->rowCount();
+$number_of_page = ceil($number_of_rows / $results_per_page);
+$sqlloadnews = $sqlloadnews . " LIMIT $page_first_result, $results_per_page";
+$stmt = $conn->prepare($sqlloadnews);
+$stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 function randomString($length = 10)
@@ -179,6 +190,8 @@ function truncate($string, $length, $dots = "...")
                     echo "<table class='w3-table-all'>";
                     echo "<tr><th>No</th><th>Title</th><th>Content</th><th>Date</th><th>Action</th></tr>";
                     $i =1;
+                    $i = $page_first_result + 1;
+
                     foreach ($rows as $news) { //array traversal
                         $newsid = $news['news_id'];
                         $newstitle = $news['news_title'];
@@ -230,7 +243,14 @@ function truncate($string, $length, $dots = "...")
                 }
             ?>
         </div>
-
+        <?php
+         echo "<div class='w3-container w3-padding w3-row w3-center'>";
+         for ($page = 1; $page <= $number_of_page; $page++) {
+             echo '<a href = "mainpage.php?pageno=' .$page .'" style= "text-decoration: none">&nbsp&nbsp' .$page ." </a>";
+         }
+         echo " ( " . $pageno . " )";
+         echo "</div>";
+        ?>
         <footer class="w3-teal w3-padding-24">
             <p style="text-align: center">Copyright &copy; 2023 Slumberjer Event Sdn Bhd</p>
         </footer>
