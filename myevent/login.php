@@ -3,16 +3,20 @@ if (isset($_POST['submit'])) {
     $email = $_POST['useremail'];
     $passwordraw = $_POST['password'];
     $password = sha1($passwordraw);
-    $sqllogin = "SELECT  `admin_email`, `admin_password` FROM `tbl_admins` WHERE `admin_email` = '$email' AND `admin_password` = '$password'";
+    $sqllogin = "SELECT  * FROM `tbl_admins` WHERE `admin_email` = '$email' AND `admin_password` = '$password'";
     
     try{
         include("dbconnect.php"); // database connection
         $stmt = $conn->prepare($sqllogin);
-        $stmt->execute();
+        $result = $stmt->execute();
         $number_of_rows = $stmt->rowCount();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
         if ($number_of_rows > 0) {
+            $userid  = $row['admin_id'];
             session_start();
             $_SESSION['sessionid'] = session_id();
+            $_SESSION['adminid'] = $userid;
             $_SESSION['adminemail'] = $email;
             $_SESSION['adminpass'] = $passwordraw;
             echo "<script>alert('Success')</script>";

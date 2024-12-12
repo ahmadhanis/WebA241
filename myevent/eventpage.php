@@ -33,7 +33,7 @@ if (isset($_SESSION['sessionid'])) {
             <a href="mainpage.php" class="w3-bar-item w3-button">News</a>
             <a href="memberpage.php" class="w3-bar-item w3-button">Members</a>
             <a href="eventpage.php" class="w3-bar-item w3-button">Events</a>
-            <a href="profilepage.php" class="w3-bar-item w3-button">profile</a>
+            <a href="profilepage.html" class="w3-bar-item w3-button">Profile</a>
             <a href="logout.php" class="w3-bar-item w3-button">Logout</a>
         </div>
     </nav>

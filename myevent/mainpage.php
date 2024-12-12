@@ -2,7 +2,8 @@
 session_start();
 if (isset($_SESSION['sessionid'])) {
     $adminemail = $_SESSION['adminemail'];
-    $adminpass = $_SESSION['adminpass']; 
+    $adminpass = $_SESSION['adminpass'];
+    $adminid = $_SESSION['adminid'];
 }else{
     echo "<script>alert('No session available. Please login.');</script>";
     echo "<script>window.location.replace('login.php')</script>";
@@ -130,7 +131,7 @@ function truncate($string, $length, $dots = "...")
             <a href="mainpage.php" class="w3-bar-item w3-button">News</a>
             <a href="memberpage.php" class="w3-bar-item w3-button">Members</a>
             <a href="eventpage.php" class="w3-bar-item w3-button">Events</a>
-            <a href="profilepage.php" class="w3-bar-item w3-button">profile</a>
+            <a href="profilepage.html?adminid=<?php echo $adminid ?>" class="w3-bar-item w3-button">Profile</a>
             <a href="logout.php" class="w3-bar-item w3-button">Logout</a>
         </div>
     </nav>

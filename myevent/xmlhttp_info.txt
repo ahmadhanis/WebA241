@@ -1,0 +1,3 @@
+Welcome to XMLHTTPRequest
+This is our first test
+using the class

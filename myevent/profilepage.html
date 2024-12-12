@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Portal</title>
+    <link rel="stylesheet" href="w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<body onload="loadProfileData()">
+
+    <!-- Sidebar -->
+    <nav class="w3-sidebar w3-bar-block w3-collapse w3-top w3-card" style="z-index:3;width:250px" id="mySidebar">
+        <div class="w3-container w3-display-container w3-padding-16">
+            <i onclick="close_menu()" class="fa fa-remove w3-hide-large w3-button w3-display-topright"></i>
+            <h3 class="w3-wide"><b>Profile</b></h3>
+        </div>
+        <div class="w3-padding-64 w3-large w3-text-grey" style="font-weight:bold">
+            <a href="mainpage.php" class="w3-bar-item w3-button">News</a>
+            <a href="memberpage.php" class="w3-bar-item w3-button">Members</a>
+            <a href="eventpage.php" class="w3-bar-item w3-button">Events</a>
+            <a href="profilepage.html" class="w3-bar-item w3-button">Profile</a>
+            <a href="logout.php" class="w3-bar-item w3-button">Logout</a>
+        </div>
+    </nav>
+    <!-- Sidebar -->
+
+    <!-- Top hamburger menu -->
+    <header class="w3-bar w3-top w3-hide-large w3-xlarge">
+        <div class="w3-bar-item w3-padding-24 w3-wide"></div>
+        <a href="javascript:void(0)" class="w3-bar-item w3-button w3-padding-24 w3-right" onclick="open_menu()"><i
+                class="fa fa-bars"></i></a>
+        <div class="w3-hide-large w3-padding-24 w3-wide w3-right">
+            <h6>Profile</h6>
+        </div>
+    </header>
+    <!-- Top hamburger menu -->
+
+    <!-- Content -->
+    <div class="w3-main" style="margin-left:250px">
+        <header class="w3-center w3-teal w3-padding-32">
+            <h1>Profile</h1>
+            <p>Your One Stop Event Manager</p>
+        </header>
+       
+        <div style="height:80px">
+
+        </div>
+        <div class="w3-container" style="height: 1200px;margin:auto;overflow-y: auto">
+            <div id="profiledata" class="w3-container w3-center" style="max-width: 600px;margin:auto" >
+                <table class="w3-table-all w3-hoverable">
+                    <tr>
+                        <td style="width: 200px">Admin ID:</td>
+                        <td id="adminid"></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 200px">Email:</td>
+                        <td id="email"></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 200px">Password:</td>
+                        <td id="passid"></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 200px">Date Register:</td>
+                        <td id="dateid"></td>
+                    </tr>
+                </table>
+
+                <div class="w3-button w3-teal w3-round w3-margin" onclick="document.getElementById('idpassdialog').style.display='block'">Change Password</div>
+            </div>
+        </div>
+
+        <footer class="w3-teal w3-padding-24">
+            <p style="text-align: center">Copyright &copy; 2023 Slumberjer Event Sdn Bhd</p>
+        </footer>
+    </div>
+
+
+    <div id="idpassdialog" class="w3-modal">
+        <div class="w3-modal-content" style="width:600px">
+            <header class="w3-container w3-teal">
+                <span onclick="document.getElementById('idpassdialog').style.display='none'"
+                    class="w3-button w3-display-topright  fa fa-close"></span>
+                <h3>Change Password</h3>
+            </header>
+            <div class="w3-container w3-padding">
+                    <input class="w3-input w3-border w3-round" type="password" name="oldpass" id="oldpassid" required
+                        placeholder="Old Password"><br>
+                    <input class="w3-input w3-border w3-round" type="password" name="newpass" id="newpassid" required
+                        placeholder="New Password"><br>
+                    <input class="w3-input w3-border w3-round" type="password" name="confirmpass" id = "confirmpassid" required
+                        placeholder="Confirm Password"><br>
+                    <br>
+                    <input class="w3-input w3-border w3-button w3-teal w3-round" type="submit" name="submit" onclick="changePassword()"
+                        value="Submit"> <br> 
+            </div>
+        </div>
+    </div>
+    <script>
+
+        function changePassword(){
+            var oldpass = document.getElementById("oldpassid").value;
+            var newpass = document.getElementById("newpassid").value;
+            var confirmpass = document.getElementById("confirmpassid").value;
+            // console.log(oldpass + " / " + newpass + " /" + confirmpass);
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "api/changepass.php", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("email=" + localStorage.getItem("useremail") + "&oldpass=" + oldpass + "&newpass=" + newpass + "&confirmpass=" + confirmpass);
+            xhttp.onreadystatechange = function () {    
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText);
+                    var data = JSON.parse(this.responseText);
+                    if(data['status'] == "Success"){
+                        document.getElementById("idpassdialog").style.display = "none";
+                        alert(data['message']);
+                    }
+                    else{
+                        alert(data['message']);    
+                    }
+                };   
+            }
+        }
+
+        function open_menu() {
+            document.getElementById("mySidebar").style.display = "block";
+        }
+    
+        function close_menu() {
+            document.getElementById("mySidebar").style.display = "none";
+        }
+        function loadProfileData() {
+            // console.log(localStorage.getItem("useremail"));
+            var profileurl = window.location.search;
+            var adminid = profileurl.replace("?adminid=", "");
+            console.log(adminid);
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "api/profile.php?adminid=" + adminid, true);
+            xhttp.send();
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var data = JSON.parse(this.responseText);
+                    document.getElementById("adminid").innerHTML = data['admin_id'];
+                    document.getElementById("email").innerHTML = data['admin_email'];
+                    document.getElementById("passid").innerHTML = "********";
+                    var date = new Date(data['admin_datereg']);
+                    var options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
+                    document.getElementById("dateid").innerHTML = date.toLocaleString('en-GB', options).replace(',', '');
+
+                    // document.getElementById("profiledata").innerHTML = this.responseText;
+                }
+            };
+        }
+        </script>
+    </body>
+</html>
